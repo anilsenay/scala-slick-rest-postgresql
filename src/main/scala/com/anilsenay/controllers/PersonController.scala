@@ -26,7 +26,7 @@ class PersonController(dbService: PersonService) extends SprayJsonSupport with D
           val saved = dbService.insertPerson(person.name, person.surname)
           onComplete(saved) {
             case Success(savedPerson) => {
-              logger.error(s"Inserted person with id:${savedPerson.id}")
+              logger.info(s"Inserted person with id:${savedPerson.id}")
               complete(savedPerson)
             }
             case Failure(e) => {

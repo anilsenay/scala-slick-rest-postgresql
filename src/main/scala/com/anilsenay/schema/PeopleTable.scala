@@ -1,4 +1,4 @@
-package com.anilsenay.tables
+package com.anilsenay.schema
 
 import com.anilsenay.models.Person
 import slick.jdbc.PostgresProfile.api._

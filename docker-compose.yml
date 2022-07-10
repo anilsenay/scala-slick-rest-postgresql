@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres:14-alpine
+    container_name: postgres-scala
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_HOST_AUTH_METHOD: password
+      POSTGRES_DB: scala-rest
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database.sql:/docker-entrypoint-initdb.d/create_tables.sql
+

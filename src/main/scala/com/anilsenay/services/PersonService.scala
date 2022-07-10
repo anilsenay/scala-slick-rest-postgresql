@@ -2,7 +2,7 @@ package com.anilsenay.services
 
 import com.anilsenay.models.Person
 import slick.jdbc.PostgresProfile.api._
-import com.anilsenay.tables.PeopleTable._
+import com.anilsenay.schema.PeopleTable._
 
 import scala.concurrent.{ExecutionContext, Future}
 
