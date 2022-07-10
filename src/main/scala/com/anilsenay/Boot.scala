@@ -3,8 +3,7 @@ package com.anilsenay
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import com.anilsenay.controllers.PersonController
-import com.anilsenay.services.PersonService
+import com.anilsenay.controllers.RootRoute
 import com.anilsenay.utils.PostgresDb
 import com.typesafe.scalalogging.StrictLogging
 
@@ -14,8 +13,7 @@ object Boot extends App with StrictLogging {
   private implicit val ec = system.dispatcher
 
   val database = PostgresDb.db
-  val dbService = new PersonService(database)
-  val restService = new PersonController(dbService)
+  val restService = RootRoute(database)
 
   Http()
     .bindAndHandle(restService.route, "localhost", 8080)
