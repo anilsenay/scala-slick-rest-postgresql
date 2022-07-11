@@ -1,7 +1,10 @@
 package com.anilsenay.services
 
-import com.anilsenay.models.User
+import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
+import com.anilsenay.models.{User, UserWithAddress}
 import com.anilsenay.schema.UsersTable._
+import com.anilsenay.schema.AddressTable._
+import com.anilsenay.schema.UserAddressTable._
 import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -12,6 +15,21 @@ class UserService(db: Database)(implicit ec: ExecutionContext) {
   def getUser(id: String): Future[Option[User]] = {
     db.run {
       users.filter(_.id === id).result.headOption
+    }
+  }
+
+  def getUserWithAddresses(id: String): Future[Option[UserWithAddress]] = {
+    db.run {
+      (for {
+        user <- users.filter(_.id === id)
+        userAddress <- userAddresses.filter(_.userId === id)
+        address <- addresses.filter(_.id === userAddress.addressId)
+      } yield (user, address)).result.map {
+        _.groupBy(_._1)
+          .map {
+            case (u, seq) => UserWithAddress(u, seq.map(_._2))
+          }.toSeq.headOption
+      }
     }
   }
 

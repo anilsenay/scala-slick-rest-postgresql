@@ -16,6 +16,6 @@ object Boot extends App with StrictLogging {
   val restService = RootRoute(database)
 
   Http()
-    .bindAndHandle(restService.route, "localhost", 8080)
+    .bindAndHandle(restService, "localhost", 8080)
     .map(_ => logger.info("Server started at port 8080"))
 }
