@@ -4,7 +4,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.anilsenay.models.{Product, ProductPost}
+import com.anilsenay.models.{Product, ProductPost, ProductUpdate}
 import com.anilsenay.services.ProductService
 import com.typesafe.scalalogging.LazyLogging
 import spray.json._
@@ -94,10 +94,41 @@ class ProductController(dbService: ProductService) extends SprayJsonSupport with
         }
       }
     } ~
-      delete {
-        path(LongNumber / "size" / Segment) {
-          (productId, size) => {
-            val saved = dbService.deleteSize(productId, size)
+    put {
+      path(LongNumber) { id =>
+        entity(as[ProductUpdate]) { product =>
+          val updated = dbService.update(id, product)
+          onComplete(updated) {
+            case Success(updatedRows) => complete(JsObject("updatedRows" -> JsNumber(updatedRows)))
+            case Failure(e) => {
+              logger.error(s"Failed to update a person ${id}", e)
+              complete(StatusCodes.InternalServerError)
+            }
+          }
+        }
+      }
+    } ~
+    delete {
+      path(LongNumber / "size" / Segment) {
+        (productId, size) => {
+          val saved = dbService.deleteSize(productId, size)
+          onComplete(saved) {
+            case Success(savedProductSizes) => {
+              logger.info(s"Inserted sizes to product with id:${productId}")
+              complete(JsObject("InsertedSizes" -> JsNumber(savedProductSizes)))
+            }
+            case Failure(e) => {
+              println(s"Failed to insert sizes", e)
+              complete(StatusCodes.InternalServerError)
+            }
+          }
+        }
+      } ~
+      path(LongNumber / "photo") {
+        (productId) => {
+          entity(as[Seq[String]]) { photos =>
+            val saved = dbService.deleteImage(productId, photos)
+            println("assdassa")
             onComplete(saved) {
               case Success(savedProductSizes) => {
                 logger.info(s"Inserted sizes to product with id:${productId}")
@@ -109,35 +140,18 @@ class ProductController(dbService: ProductService) extends SprayJsonSupport with
               }
             }
           }
-        } ~
-        path(LongNumber / "photo") {
-          (productId) => {
-            entity(as[Seq[String]]) { photos =>
-              val saved = dbService.deleteImage(productId, photos)
-              println("assdassa")
-              onComplete(saved) {
-                case Success(savedProductSizes) => {
-                  logger.info(s"Inserted sizes to product with id:${productId}")
-                  complete(JsObject("InsertedSizes" -> JsNumber(savedProductSizes)))
-                }
-                case Failure(e) => {
-                  println(s"Failed to insert sizes", e)
-                  complete(StatusCodes.InternalServerError)
-                }
-              }
-            }
-          }
-        } ~
-        path(LongNumber) { id =>
-          val deleted = dbService.delete(id)
-          onComplete(deleted) {
-            case Success(updatedRows) => complete(JsObject("deletedRows" -> JsNumber(updatedRows)))
-            case Failure(e) => {
-              logger.error(s"Failed to update a person ${id}", e)
-              complete(StatusCodes.InternalServerError)
-            }
+        }
+      } ~
+      path(LongNumber) { id =>
+        val deleted = dbService.delete(id)
+        onComplete(deleted) {
+          case Success(updatedRows) => complete(JsObject("deletedRows" -> JsNumber(updatedRows)))
+          case Failure(e) => {
+            logger.error(s"Failed to update a person ${id}", e)
+            complete(StatusCodes.InternalServerError)
           }
         }
       }
+    }
   }
 }

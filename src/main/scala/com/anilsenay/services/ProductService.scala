@@ -1,7 +1,7 @@
 package com.anilsenay.services
 
 import com.anilsenay.schema.ProductTable._
-import com.anilsenay.models.{FullProduct, Product, ProductImage, ProductSize}
+import com.anilsenay.models.{FullProduct, Product, ProductImage, ProductSize, ProductUpdate}
 import com.anilsenay.schema.BrandTable.brands
 import com.anilsenay.schema.CategoryTable.categories
 import com.anilsenay.schema.ProductImageTable.productImages
@@ -137,7 +137,7 @@ class ProductService(db: Database)(implicit ec: ExecutionContext) {
     }
   }
 
-  def insertProduct(productName: String, coverPhotoIndex: Int, information: String, price: Double, salePrice: Double, brandId: Option[Long], categoryId: Option[Long], photos: Seq[String] = Seq(), sizes: Seq[String] = Seq()) = {
+  def insertProduct(productName: String, coverPhotoIndex: Int, information: String, price: Double, salePrice: Double, brandId: Option[Long], categoryId: Option[Long], photos: Seq[String] = Seq(), sizes: Seq[String] = Seq()): Future[(Product, Seq[Option[Long]], Seq[Option[Long]])] = {
     val action = (products.map(product => (product.productName, product.coverPhotoIndex, product.information, product.price, product.salePrice, product.brandId, product.categoryId)) returning products
       .map(_.id) into (
       (productData, id) => Product(id, productData._1, productData._2, productData._3, productData._4, productData._5, productData._6, productData._7)
@@ -150,11 +150,11 @@ class ProductService(db: Database)(implicit ec: ExecutionContext) {
     } yield (product, photos, sizes))
   }
 
-  def insertProductImage(productId: Long, photos: Seq[String] = Seq()) = {
+  def insertProductImage(productId: Long, photos: Seq[String] = Seq()): Future[Seq[Option[Long]]] = {
     db.run((productImages returning productImages.map(_.id)) ++= photos.map(i => ProductImage(None, i, Some(productId))))
   }
 
-  def insertProductSizes(productId: Long, sizes: Seq[String] = Seq()) = {
+  def insertProductSizes(productId: Long, sizes: Seq[String] = Seq()): Future[Seq[Option[Long]]] = {
     db.run((productSizes returning productSizes.map(_.id)) ++= sizes.map(i => ProductSize(None, i, Some(productId))))
   }
 
@@ -164,6 +164,25 @@ class ProductService(db: Database)(implicit ec: ExecutionContext) {
       productImages.filter(_.productId === id).delete
       productSizes.filter(_.productId === id).delete
     }
+  }
+
+  def update(id: Long, product: ProductUpdate): Future[Int] = {
+    // TODO: is this the best way for optional updating?
+    for {
+      p <- db.run(products.filter(_.id === id).result.head)
+      num <- db.run(products
+        .filter(_.id === id)
+        .map(p => (p.productName, p.coverPhotoIndex, p.information, p.price, p.salePrice, p.brandId, p.categoryId))
+        .update((
+          product.productName.getOrElse(p.productName),
+          product.coverPhotoIndex.getOrElse(p.coverPhotoIndex),
+          product.information.getOrElse(p.information),
+          product.price.getOrElse(p.price),
+          product.salePrice.getOrElse(p.salePrice),
+          product.brandId.getOrElse(p.brandId),
+          product.categoryId.getOrElse(p.categoryId)
+        )))
+    } yield (num)
   }
 
   def deleteSize(productId: Long, size: String): Future[Int] = {

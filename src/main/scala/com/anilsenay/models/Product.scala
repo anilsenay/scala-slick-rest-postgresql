@@ -34,6 +34,22 @@ object ProductPost extends DefaultJsonProtocol {
   implicit val productFormat = jsonFormat10(ProductPost.apply)
 }
 
+case class ProductUpdate(
+                        productName: Option[String],
+                        coverPhotoIndex: Option[Int],
+                        information: Option[String],
+                        price: Option[Double],
+                        salePrice: Option[Double],
+                        brandId: Option[Option[Long]],
+                        categoryId: Option[Option[Long]],
+                        photos: Option[Seq[String]],
+                        sizes: Option[Seq[String]]
+                      )
+
+object ProductUpdate extends DefaultJsonProtocol {
+  implicit val productFormat = jsonFormat9(ProductUpdate.apply)
+}
+
 case class FullProduct(
                     id: Option[Long],
                     productName: String,
