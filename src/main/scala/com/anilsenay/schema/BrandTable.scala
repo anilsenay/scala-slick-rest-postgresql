@@ -1,22 +1,18 @@
 package com.anilsenay.schema
 
-import com.anilsenay.models.Product
+import com.anilsenay.models.Brand
 import slick.jdbc.PostgresProfile.api._
 
-object ProductTable {
+object BrandTable {
 
-  class Products(tag: Tag) extends Table[Product](tag, "product") {
+  class Brands(tag: Tag) extends Table[Brand](tag, "brand") {
     def id = column[Option[String]]("id", O.PrimaryKey)
-    def name = column[String]("name")
-    def coverPhotoIndex = column[Int]("cover_photo_index")
-    def information = column[String]("information")
-    def price = column[Double]("price")
-    def salePrice = column[Double]("sale_price")
+    def brandName = column[String]("name")
 
     def * =
-      (id, name, coverPhotoIndex, information, price, salePrice) <> ((Product.apply _).tupled, Product.unapply)
+      (id, brandName) <> ((Brand.apply _).tupled, Brand.unapply)
   }
 
-  val products = TableQuery[Products]
+  val brands = TableQuery[Brands]
 
 }

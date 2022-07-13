@@ -15,7 +15,7 @@ object UserAddressTable {
       (userId, addressId) <> ((UserAddress.apply _).tupled, UserAddress.unapply)
 
     def user = foreignKey("fk_user", userId, TableQuery[Users])(_.id)
-    def address = foreignKey("fk_user", addressId, TableQuery[Addresses])(_.id)
+    def address = foreignKey("fk_address", addressId, TableQuery[Addresses])(_.id, onDelete=ForeignKeyAction.Cascade)
   }
 
   val userAddresses = TableQuery[UserAddresses]

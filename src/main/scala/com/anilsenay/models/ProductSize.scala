@@ -2,8 +2,8 @@ package com.anilsenay.models
 
 import spray.json.DefaultJsonProtocol
 
-case class ProductImage(id: Option[String], url: String, product_id: Option[String])
+case class ProductSize(id: Option[String], size: String, product_id: Option[String])
 
-object ProductImage extends DefaultJsonProtocol {
-  implicit val productImageFormat = jsonFormat3(ProductImage.apply)
+object ProductSize extends DefaultJsonProtocol {
+  implicit val productImageFormat = jsonFormat3(ProductSize.apply)
 }

@@ -11,20 +11,20 @@ import spray.json._
 
 import scala.util.{Failure, Success}
 
-class AddressController(dbService: AddressService) extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
+class AddressController extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
   val route: Route = pathPrefix("api" / "address") {
     get {
       pathEndOrSingleSlash {
-        complete(dbService.getAllAddress)
+        complete(AddressService.getAllAddress)
       } ~
         path(Segment) { addressId =>
-          complete(dbService.getAddress(addressId))
+          complete(AddressService.getAddress(addressId))
         }
     } ~
     post {
       pathEndOrSingleSlash {
         entity(as[Address]) { address =>
-          val saved = dbService.insertAddress(address.title, address.city, address.region, address.zipcode, address.fullAddress)
+          val saved = AddressService.insertAddress(address.title, address.city, address.region, address.zipcode, address.fullAddress)
           onComplete(saved) {
             case Success(savedAddress) => {
               logger.info(s"Inserted person with id:${savedAddress.id}")
@@ -41,7 +41,7 @@ class AddressController(dbService: AddressService) extends SprayJsonSupport with
     put {
       path(Segment) { id =>
         entity(as[Address]) { address =>
-          val updated = dbService.update(id, address)
+          val updated = AddressService.update(id, address)
           onComplete(updated) {
             case Success(updatedRows) => complete(JsObject("updatedRows" -> JsNumber(updatedRows)))
             case Failure(e) => {
@@ -54,11 +54,11 @@ class AddressController(dbService: AddressService) extends SprayJsonSupport with
     } ~
     delete {
       path(Segment) { id =>
-        val deleted = dbService.delete(id)
+        val deleted = AddressService.delete(id)
         onComplete(deleted) {
           case Success(updatedRows) => complete(JsObject("deletedRows" -> JsNumber(updatedRows)))
           case Failure(e) => {
-            logger.error(s"Failed to update a person ${id}", e)
+            println(e)
             complete(StatusCodes.InternalServerError)
           }
         }

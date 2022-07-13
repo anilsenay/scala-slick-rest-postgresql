@@ -1,5 +1,9 @@
 package com.anilsenay.models
 
-case class Brand(id: Option[String], name: String)
+import spray.json.DefaultJsonProtocol
 
+case class Category(id: Option[String], categoryName: String)
 
+object Category extends DefaultJsonProtocol {
+  implicit val categoryFormat = jsonFormat2(Category.apply)
+}

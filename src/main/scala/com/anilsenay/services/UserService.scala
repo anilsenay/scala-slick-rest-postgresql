@@ -27,7 +27,7 @@ class UserService(db: Database)(implicit ec: ExecutionContext) {
       } yield (user, address)).result.map {
         _.groupBy(_._1)
           .map {
-            case (u, seq) => UserWithAddress(u, seq.map(_._2))
+            case (u, seq) => UserWithAddress(u.id, u.name, u.surname, u.email, u.phone, seq.map(_._2))
           }.toSeq.headOption
       }
     }

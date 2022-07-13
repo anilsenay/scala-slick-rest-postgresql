@@ -1,6 +1,7 @@
 package com.anilsenay.schema
 
 import com.anilsenay.models.Address
+import com.anilsenay.schema.UserAddressTable.UserAddresses
 import slick.jdbc.PostgresProfile.api._
 
 object AddressTable {
@@ -15,6 +16,7 @@ object AddressTable {
 
     def * =
       (id, title, city, region, zipcode, fullAddress) <> ((Address.apply _).tupled, Address.unapply)
+
   }
 
   val addresses = TableQuery[Addresses]

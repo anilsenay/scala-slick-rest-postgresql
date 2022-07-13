@@ -1,21 +1,30 @@
 package com.anilsenay.schema
 
-import com.anilsenay.models.User
+import com.anilsenay.models.Product
+import com.anilsenay.schema.BrandTable.Brands
+import com.anilsenay.schema.CategoryTable.Categories
 import slick.jdbc.PostgresProfile.api._
 
-object UsersTable {
+object ProductTable {
 
-  class Users(tag: Tag) extends Table[User](tag, "users") {
+  class Products(tag: Tag) extends Table[Product](tag, "product") {
     def id = column[Option[String]]("id", O.PrimaryKey)
-    def name = column[String]("name")
-    def surname = column[String]("surname")
-    def email = column[String]("email")
-    def phone = column[String]("phone")
+    def productName = column[String]("product_name")
+    def brandId = column[Option[String]]("brand_id")
+    def categoryId = column[Option[String]]("category_id")
+    def coverPhotoIndex = column[Int]("cover_photo_index")
+    def information = column[String]("information")
+    def price = column[Double]("price")
+    def salePrice = column[Double]("sale_price")
 
     def * =
-      (id, name, surname, email, phone) <> ((User.apply _).tupled, User.unapply)
+      (id, productName, brandId, categoryId, coverPhotoIndex, information, price, salePrice) <> ((Product.apply _).tupled, Product.unapply)
+
+    def brand = foreignKey("fk_brand", brandId, TableQuery[Brands])(_.id)
+    def category = foreignKey("fk_category", categoryId, TableQuery[Categories])(_.id)
+
   }
 
-  val users = TableQuery[Users]
+  val products = TableQuery[Products]
 
 }

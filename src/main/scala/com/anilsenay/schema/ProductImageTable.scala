@@ -1,18 +1,19 @@
 package com.anilsenay.schema
 
-import com.anilsenay.models.Category
+import com.anilsenay.models.ProductImage
 import slick.jdbc.PostgresProfile.api._
 
-object CategoryTable {
+object ProductImageTable {
 
-  class Categories(tag: Tag) extends Table[Category](tag, "category") {
+  class ProductImages(tag: Tag) extends Table[ProductImage](tag, "product_photo") {
     def id = column[Option[String]]("id", O.PrimaryKey)
-    def categoryName = column[String]("category_name")
+    def url = column[String]("url")
+    def productId = column[Option[String]]("product_id")
 
     def * =
-      (id, categoryName) <> ((Category.apply _).tupled, Category.unapply)
+      (id, url, productId) <> ((ProductImage.apply _).tupled, ProductImage.unapply)
   }
 
-  val categories = TableQuery[Categories]
+  val productImages = TableQuery[ProductImages]
 
 }

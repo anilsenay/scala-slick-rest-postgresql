@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS "address" (
 CREATE TABLE IF NOT EXISTS "user_address" (
     address_id uuid,
     user_id uuid,
-    CONSTRAINT fk_address FOREIGN KEY(address_id) REFERENCES address(id),
+    CONSTRAINT fk_address FOREIGN KEY(address_id) REFERENCES address(id) ON delete cascade,
     CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
     PRIMARY KEY(address_id, user_id)
     );
@@ -32,12 +32,14 @@ CREATE TABLE IF NOT EXISTS "brand" (
 CREATE TABLE IF NOT EXISTS "product" (
     id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
     brand_id uuid,
+    category_id uuid,
     product_name VARCHAR NOT NULL,
     information VARCHAR,
     cover_photo_index smallint DEFAULT 0,
     price DECIMAL(12,2),
     sale_price DECIMAL(12,2),
     CONSTRAINT fk_brand FOREIGN KEY(brand_id) REFERENCES brand(id)
+    CONSTRAINT fk_category FOREIGN KEY(category_id) REFERENCES category(id)
     );
 
 CREATE TABLE IF NOT EXISTS "product_photo" (
@@ -50,13 +52,6 @@ CREATE TABLE IF NOT EXISTS "product_photo" (
 CREATE TABLE IF NOT EXISTS "category" (
     id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
     category_name VARCHAR NOT NULL
-    );
-CREATE TABLE IF NOT EXISTS "product_category" (
-    product_id uuid,
-    category_id uuid,
-    CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id),
-    CONSTRAINT fk_category FOREIGN KEY(category_id) REFERENCES category(id),
-    PRIMARY KEY(product_id, category_id)
     );
 
 CREATE TABLE IF NOT EXISTS "product_size" (
@@ -100,18 +95,16 @@ VALUES ((SELECT id from users WHERE name='anil'), (SELECT id from address WHERE 
 INSERT INTO brand(name) VALUES ('nike');
 INSERT INTO brand(name) VALUES ('adidas');
 
-INSERT INTO product(product_name, brand_id, cover_photo_index, price, sale_price, information)
-VALUES ('Nike AirForce 1', (SELECT id from brand WHERE name='nike'), 1, 2099, 1999, 'Nike Airforce 1 Yellow');
-
-INSERT INTO product_photo(url, product_id) VALUES ('http://imageurl.com/image1.png', (SELECT id FROM product LIMIT 1));
-INSERT INTO product_photo(url, product_id) VALUES ('http://imageurl.com/image2.png', (SELECT id FROM product LIMIT 1));
-INSERT INTO product_photo(url, product_id) VALUES ('http://imageurl.com/image3.png', (SELECT id FROM product LIMIT 1));
-
 INSERT INTO category(category_name) VALUES ('T-Shirt');
 INSERT INTO category(category_name) VALUES ('Jeans');
 INSERT INTO category(category_name) VALUES ('Shoes');
 
-INSERT INTO product_category(product_id, category_id) VALUES ((SELECT id FROM product LIMIT 1), (SELECT id FROM category WHERE category_name='Shoes'));
+INSERT INTO product(product_name, brand_id, category_id, cover_photo_index, price, sale_price, information)
+VALUES ('Nike AirForce 1', (SELECT id from brand WHERE name='nike'), (SELECT id FROM category WHERE category_name='Shoes'), 1, 2099, 1999, 'Nike Airforce 1 Yellow');
+
+INSERT INTO product_photo(url, product_id) VALUES ('http://imageurl.com/image1.png', (SELECT id FROM product LIMIT 1));
+INSERT INTO product_photo(url, product_id) VALUES ('http://imageurl.com/image2.png', (SELECT id FROM product LIMIT 1));
+INSERT INTO product_photo(url, product_id) VALUES ('http://imageurl.com/image3.png', (SELECT id FROM product LIMIT 1));
 
 INSERT INTO orders(address_id, user_id, total_price) VALUES ((SELECT id FROM address LIMIT 1), (SELECT id from users WHERE name='anil'), 1999);
 INSERT INTO order_product(order_id, product_id, quantity) VALUES ((SELECT id FROM orders LIMIT 1), (SELECT id FROM product LIMIT 1), 1);

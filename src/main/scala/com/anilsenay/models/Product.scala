@@ -2,8 +2,34 @@ package com.anilsenay.models
 
 import spray.json.DefaultJsonProtocol
 
-case class Address(id: Option[String], title: String, city: String, region: String, zipcode: String, fullAddress: String)
+case class Product(
+                  id: Option[String],
+                  productName: String,
+                  brandId: Option[String],
+                  categoryId: Option[String],
+                  coverPhotoIndex: Int,
+                  information: String,
+                  price: Double,
+                  salePrice: Double,
+                )
 
-object Address extends DefaultJsonProtocol {
-  implicit val addressFormat = jsonFormat6(Address.apply)
+object Product extends DefaultJsonProtocol {
+  implicit val productFormat = jsonFormat8(Product.apply)
+}
+
+case class FullProduct(
+                    id: Option[String],
+                    productName: String,
+                    coverPhotoIndex: Int,
+                    information: String,
+                    price: Double,
+                    salePrice: Double,
+                    brand: Option[Brand],
+                    category: Option[Category],
+                    photos: Seq[String],
+                    sizes: Seq[ProductSize]
+                  )
+
+object FullProduct extends DefaultJsonProtocol {
+  implicit val productFormat = jsonFormat10(FullProduct.apply)
 }
