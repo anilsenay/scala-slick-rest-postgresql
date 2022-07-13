@@ -18,19 +18,22 @@ class UserService(db: Database)(implicit ec: ExecutionContext) {
     }
   }
 
-  def getUserWithAddresses(id: Long): Future[Option[UserWithAddress]] = {
-    db.run {
-      (for {
-        user <- users.filter(_.id === id)
-        userAddress <- userAddresses.filter(_.userId === id)
-        address <- addresses.filter(_.id === userAddress.addressId)
-      } yield (user, address)).result.map {
-        _.groupBy(_._1)
-          .map {
-            case (u, seq) => UserWithAddress(u.id, u.name, u.surname, u.email, u.phone, seq.map(_._2))
-          }.toSeq.headOption
+  def getUserWithAddresses(id: Long): Future[(Option[User], Option[UserWithAddress])] = {
+    for {
+      user <- db.run(users.filter(_.id === id).result.headOption)
+      address <- db.run {
+        (for {
+          user <- users.filter(_.id === id)
+          userAddress <- userAddresses.filter(_.userId === id)
+          address <- addresses.filter(_.id === userAddress.addressId)
+        } yield (user, address)).result.map {
+          _.groupBy(_._1)
+            .map {
+              case (u, seq) => UserWithAddress(u.id, u.name, u.surname, u.email, u.phone, seq.map(_._2))
+            }.toSeq.headOption
+        }
       }
-    }
+    } yield (user, address)
   }
 
   def insertUser(name: String, surname: String, email: String, phone: String): Future[User] = {

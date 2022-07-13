@@ -4,7 +4,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.anilsenay.models.{Address, User}
+import com.anilsenay.models.{Address, User, UserWithAddress}
 import com.anilsenay.services.{AddressService, UserService}
 import com.typesafe.scalalogging.LazyLogging
 import spray.json._
@@ -24,7 +24,14 @@ class UserController(dbService: UserService) extends SprayJsonSupport with Defau
               val q = dbService.getUserWithAddresses(userId)
               onComplete(q) {
                 case Success(result) => {
-                  complete(result)
+                  result match {
+                    case (_: Option[User], b: Option[UserWithAddress]) if b.isDefined => complete(result._2)
+                    case _ => complete(JsObject(
+                      "user" -> result._1.toJson,
+                      "address" -> JsArray()
+                    ))
+                  }
+
                 }
                 case Failure(e) => {
                   println(e)
