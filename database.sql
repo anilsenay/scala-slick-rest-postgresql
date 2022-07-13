@@ -51,14 +51,15 @@ CREATE TABLE IF NOT EXISTS "product_photo" (
                                                id SERIAL UNIQUE primary key,
                                                product_id BIGINT,
                                                url varchar NOT NULL,
-                                               CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id)
+                                               CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id) ON delete cascade
     );
 
 CREATE TABLE IF NOT EXISTS "product_size" (
-                                              id SERIAL UNIQUE primary key,
+                                              id SERIAL UNIQUE,
                                               product_id BIGINT,
                                               size varchar NOT NULL,
-                                              CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id)
+                                              CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id) ON delete cascade
+                                            PRIMARY KEY(product_id, size)
     );
 
 CREATE TABLE IF NOT EXISTS "orders" (

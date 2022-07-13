@@ -18,7 +18,7 @@ object ProductTable {
     def salePrice = column[Double]("sale_price")
 
     def * =
-      (id, productName, brandId, categoryId, coverPhotoIndex, information, price, salePrice) <> ((Product.apply _).tupled, Product.unapply)
+      (id, productName, coverPhotoIndex, information, price, salePrice, brandId, categoryId) <> ((Product.apply _).tupled, Product.unapply)
 
     def brand = foreignKey("fk_brand", brandId, TableQuery[Brands])(_.id)
     def category = foreignKey("fk_category", categoryId, TableQuery[Categories])(_.id)

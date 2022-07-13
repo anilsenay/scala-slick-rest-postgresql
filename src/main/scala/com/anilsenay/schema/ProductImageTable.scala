@@ -1,6 +1,7 @@
 package com.anilsenay.schema
 
 import com.anilsenay.models.ProductImage
+import com.anilsenay.schema.ProductTable.Products
 import slick.jdbc.PostgresProfile.api._
 
 object ProductImageTable {
@@ -12,6 +13,9 @@ object ProductImageTable {
 
     def * =
       (id, url, productId) <> ((ProductImage.apply _).tupled, ProductImage.unapply)
+
+    def product = foreignKey("fk_product", productId, TableQuery[Products])(_.id, onDelete=ForeignKeyAction.Cascade)
+
   }
 
   val productImages = TableQuery[ProductImages]
