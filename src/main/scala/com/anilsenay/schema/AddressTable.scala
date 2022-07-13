@@ -7,7 +7,7 @@ import slick.jdbc.PostgresProfile.api._
 object AddressTable {
 
   class Addresses(tag: Tag) extends Table[Address](tag, "address") {
-    def id = column[Option[String]]("id", O.PrimaryKey)
+    def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def title = column[String]("title")
     def city = column[String]("city")
     def region = column[String]("region")

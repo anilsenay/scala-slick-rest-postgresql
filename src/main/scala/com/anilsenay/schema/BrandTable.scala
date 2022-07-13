@@ -6,7 +6,7 @@ import slick.jdbc.PostgresProfile.api._
 object BrandTable {
 
   class Brands(tag: Tag) extends Table[Brand](tag, "brand") {
-    def id = column[Option[String]]("id", O.PrimaryKey)
+    def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def brandName = column[String]("name")
 
     def * =

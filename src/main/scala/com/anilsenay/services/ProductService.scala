@@ -57,7 +57,7 @@ class ProductService(db: Database)(implicit ec: ExecutionContext) {
     }
   }
 
-  def getProduct(id: String) = {
+  def getProduct(id: Long) = {
     db.run {
       val productQuery = for {
         product <- products.filter(_.id === id)

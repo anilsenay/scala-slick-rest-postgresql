@@ -1,71 +1,71 @@
 /* TABLES */
 CREATE TABLE IF NOT EXISTS "users" (
-    id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
-    name VARCHAR NOT NULL,
-    surname VARCHAR NOT NULL,
-    phone VARCHAR,
-    email VARCHAR NOT NULL
-    );
+                                       id SERIAL UNIQUE primary key,
+                                       name VARCHAR NOT NULL,
+                                       surname VARCHAR NOT NULL,
+                                       phone VARCHAR,
+                                       email VARCHAR NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS "address" (
-    id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
-    title VARCHAR NOT NULL,
-    city VARCHAR NOT NULL,
-    region VARCHAR NOT NULL,
-    zipcode VARCHAR NOT NULL,
-    full_address VARCHAR NOT NULL
-    );
+                                         id SERIAL UNIQUE primary key,
+                                         title VARCHAR NOT NULL,
+                                         city VARCHAR NOT NULL,
+                                         region VARCHAR NOT NULL,
+                                         zipcode VARCHAR NOT NULL,
+                                         full_address VARCHAR NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS "user_address" (
-    address_id uuid,
-    user_id uuid,
-    CONSTRAINT fk_address FOREIGN KEY(address_id) REFERENCES address(id) ON delete cascade,
+                                              address_id BIGINT,
+                                              user_id BIGINT,
+                                              CONSTRAINT fk_address FOREIGN KEY(address_id) REFERENCES address(id) ON delete cascade,
     CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
     PRIMARY KEY(address_id, user_id)
     );
 
 CREATE TABLE IF NOT EXISTS "brand" (
-    id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
-    name VARCHAR NOT NULL
-    );
+                                       id SERIAL UNIQUE primary key,
+                                       name VARCHAR NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "category" (
+                                          id SERIAL UNIQUE primary key,
+                                          category_name VARCHAR NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS "product" (
-    id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
-    brand_id uuid,
-    category_id uuid,
-    product_name VARCHAR NOT NULL,
-    information VARCHAR,
-    cover_photo_index smallint DEFAULT 0,
-    price DECIMAL(12,2),
+                                         id SERIAL UNIQUE primary key,
+                                         brand_id BIGINT,
+                                         category_id BIGINT,
+                                         product_name VARCHAR NOT NULL,
+                                         information VARCHAR,
+                                         cover_photo_index smallint DEFAULT 0,
+                                         price DECIMAL(12,2),
     sale_price DECIMAL(12,2),
-    CONSTRAINT fk_brand FOREIGN KEY(brand_id) REFERENCES brand(id)
+    CONSTRAINT fk_brand FOREIGN KEY(brand_id) REFERENCES brand(id),
     CONSTRAINT fk_category FOREIGN KEY(category_id) REFERENCES category(id)
     );
 
 CREATE TABLE IF NOT EXISTS "product_photo" (
-    id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
-    product_id uuid,
-    url varchar NOT NULL,
-    CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id)
-    );
-
-CREATE TABLE IF NOT EXISTS "category" (
-    id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
-    category_name VARCHAR NOT NULL
+                                               id SERIAL UNIQUE primary key,
+                                               product_id BIGINT,
+                                               url varchar NOT NULL,
+                                               CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id)
     );
 
 CREATE TABLE IF NOT EXISTS "product_size" (
-    id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
-    product_id uuid,
-    size varchar NOT NULL,
-    CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id)
+                                              id SERIAL UNIQUE primary key,
+                                              product_id BIGINT,
+                                              size varchar NOT NULL,
+                                              CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id)
     );
 
 CREATE TABLE IF NOT EXISTS "orders" (
-    id uuid DEFAULT gen_random_uuid() UNIQUE primary key,
-    user_id uuid,
-    address_id uuid,
-    total_price decimal(12,2) NOT NULL,
+                                        id SERIAL UNIQUE primary key,
+                                        user_id BIGINT,
+                                        address_id BIGINT,
+                                        total_price decimal(12,2) NOT NULL,
     status varchar DEFAULT 'preparing',
     date timestamptz DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
@@ -73,10 +73,10 @@ CREATE TABLE IF NOT EXISTS "orders" (
     );
 
 CREATE TABLE IF NOT EXISTS "order_product" (
-    order_id uuid,
-    product_id uuid,
-    quantity smallint DEFAULT 1 NOT NULL,
-    CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id),
+                                               order_id BIGINT,
+                                               product_id BIGINT,
+                                               quantity smallint DEFAULT 1 NOT NULL,
+                                               CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id),
     CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES orders(id),
     PRIMARY KEY(order_id, product_id)
     );

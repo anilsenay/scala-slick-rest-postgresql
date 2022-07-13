@@ -12,7 +12,7 @@ object AddressService extends BaseService {
 
   def getAllAddress: Future[Seq[Address]] = db.run(addresses.result)
 
-  def getAddress(id: String): Future[Option[Address]] = {
+  def getAddress(id: Long): Future[Option[Address]] = {
     db.run {
       addresses.filter(_.id === id).result.headOption
     }
@@ -27,18 +27,18 @@ object AddressService extends BaseService {
     db.run(action)
   }
 
-  def insertUserAddress(userId: String, title: String, city: String, region: String, zipcode: String, fullAddress: String): Future[Int] = {
+  def insertUserAddress(userId: Long, title: String, city: String, region: String, zipcode: String, fullAddress: String): Future[Int] = {
     val action = (addresses.map(address => (address.title, address.city, address.region, address.zipcode, address.fullAddress)) returning addresses
       .map(_.id) into (
       (addressData,
        id) => Address(id, addressData._1, addressData._2, addressData._3, addressData._4, addressData._5)
       )) += (title, city, region, zipcode, fullAddress)
     db.run(action) flatMap { address =>
-      db.run(userAddresses += UserAddress(address.id, Some(userId)))
+      db.run(userAddresses += UserAddress(Some(userId), address.id))
     }
   }
 
-  def update(id: String, address: Address): Future[Int] = {
+  def update(id: Long, address: Address): Future[Int] = {
     val action = addresses
       .filter(_.id === id)
       .map(a => (a.title, a.city, a.region, a.zipcode, a.fullAddress))
@@ -47,7 +47,7 @@ object AddressService extends BaseService {
     db.run(action)
   }
 
-  def delete(id: String): Future[Int] = {
+  def delete(id: Long): Future[Int] = {
     db.run {
       addresses.filter(_.id === id).delete
     }

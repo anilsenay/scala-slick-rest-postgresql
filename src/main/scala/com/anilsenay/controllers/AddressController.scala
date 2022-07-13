@@ -17,7 +17,7 @@ class AddressController extends SprayJsonSupport with DefaultJsonProtocol with L
       pathEndOrSingleSlash {
         complete(AddressService.getAllAddress)
       } ~
-        path(Segment) { addressId =>
+        path(LongNumber) { addressId =>
           complete(AddressService.getAddress(addressId))
         }
     } ~
@@ -39,7 +39,7 @@ class AddressController extends SprayJsonSupport with DefaultJsonProtocol with L
       }
     } ~
     put {
-      path(Segment) { id =>
+      path(LongNumber) { id =>
         entity(as[Address]) { address =>
           val updated = AddressService.update(id, address)
           onComplete(updated) {
@@ -53,7 +53,7 @@ class AddressController extends SprayJsonSupport with DefaultJsonProtocol with L
       }
     } ~
     delete {
-      path(Segment) { id =>
+      path(LongNumber) { id =>
         val deleted = AddressService.delete(id)
         onComplete(deleted) {
           case Success(updatedRows) => complete(JsObject("deletedRows" -> JsNumber(updatedRows)))

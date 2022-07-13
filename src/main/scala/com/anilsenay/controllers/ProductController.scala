@@ -18,7 +18,7 @@ class ProductController(dbService: ProductService) extends SprayJsonSupport with
         println("test")
         complete(dbService.getAllProducts)
       } ~
-      path(Segment) {
+      path(LongNumber) {
         (productId) => {
           val q = dbService.getProduct(productId)
           onComplete(q) {

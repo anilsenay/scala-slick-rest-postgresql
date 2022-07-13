@@ -3,10 +3,10 @@ package com.anilsenay.models
 import spray.json.DefaultJsonProtocol
 
 case class Product(
-                  id: Option[String],
+                  id: Option[Long],
                   productName: String,
-                  brandId: Option[String],
-                  categoryId: Option[String],
+                  brandId: Option[Long],
+                  categoryId: Option[Long],
                   coverPhotoIndex: Int,
                   information: String,
                   price: Double,
@@ -18,7 +18,7 @@ object Product extends DefaultJsonProtocol {
 }
 
 case class FullProduct(
-                    id: Option[String],
+                    id: Option[Long],
                     productName: String,
                     coverPhotoIndex: Int,
                     information: String,

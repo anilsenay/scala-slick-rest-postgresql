@@ -12,13 +12,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class UserService(db: Database)(implicit ec: ExecutionContext) {
   def getAllPeople: Future[Seq[User]] = db.run(users.result)
 
-  def getUser(id: String): Future[Option[User]] = {
+  def getUser(id: Long): Future[Option[User]] = {
     db.run {
       users.filter(_.id === id).result.headOption
     }
   }
 
-  def getUserWithAddresses(id: String): Future[Option[UserWithAddress]] = {
+  def getUserWithAddresses(id: Long): Future[Option[UserWithAddress]] = {
     db.run {
       (for {
         user <- users.filter(_.id === id)
@@ -42,7 +42,7 @@ class UserService(db: Database)(implicit ec: ExecutionContext) {
     db.run(action)
   }
 
-  def update(id: String, user: User): Future[Int] = {
+  def update(id: Long, user: User): Future[Int] = {
     val action = users
       .filter(_.id === id)
       .map(u => (u.name, u.surname, u.email, u.phone))
@@ -51,7 +51,7 @@ class UserService(db: Database)(implicit ec: ExecutionContext) {
     db.run(action)
   }
 
-  def delete(id: String): Future[Int] = {
+  def delete(id: Long): Future[Int] = {
     db.run {
       users.filter(_.id === id).delete
     }

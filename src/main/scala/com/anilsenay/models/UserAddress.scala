@@ -2,10 +2,7 @@ package com.anilsenay.models
 
 import spray.json.DefaultJsonProtocol
 
-import java.util.UUID
-
-case class UserAddress(address_id: Option[String], user_id: Option[String])
-case class UserAddressPost(address_id: Option[String], user_id: Option[UUID])
+case class UserAddress(user_id: Option[Long], address_id: Option[Long])
 
 object UserAddress extends DefaultJsonProtocol {
   implicit val userAddressFormat = jsonFormat2(UserAddress.apply)

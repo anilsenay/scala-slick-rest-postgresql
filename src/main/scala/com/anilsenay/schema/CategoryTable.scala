@@ -6,7 +6,7 @@ import slick.jdbc.PostgresProfile.api._
 object CategoryTable {
 
   class Categories(tag: Tag) extends Table[Category](tag, "category") {
-    def id = column[Option[String]]("id", O.PrimaryKey)
+    def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def categoryName = column[String]("category_name")
 
     def * =

@@ -8,10 +8,10 @@ import slick.jdbc.PostgresProfile.api._
 object ProductTable {
 
   class Products(tag: Tag) extends Table[Product](tag, "product") {
-    def id = column[Option[String]]("id", O.PrimaryKey)
+    def id = column[Option[Long]]("id", O.PrimaryKey, O.AutoInc)
     def productName = column[String]("product_name")
-    def brandId = column[Option[String]]("brand_id")
-    def categoryId = column[Option[String]]("category_id")
+    def brandId = column[Option[Long]]("brand_id")
+    def categoryId = column[Option[Long]]("category_id")
     def coverPhotoIndex = column[Int]("cover_photo_index")
     def information = column[String]("information")
     def price = column[Double]("price")

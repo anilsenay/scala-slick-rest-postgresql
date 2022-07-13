@@ -17,10 +17,10 @@ class UserController(dbService: UserService) extends SprayJsonSupport with Defau
       pathEndOrSingleSlash {
         complete(dbService.getAllPeople)
       } ~
-      path(Segment) {
+      path(LongNumber) {
         (userId) => {
           parameters("address".as[Boolean].withDefault(false)) { address =>
-            if(address) {
+            if (address) {
               val q = dbService.getUserWithAddresses(userId)
               onComplete(q) {
                 case Success(result) => {
@@ -39,40 +39,41 @@ class UserController(dbService: UserService) extends SprayJsonSupport with Defau
       }
     } ~
     post {
-        path(Segment / "address") { (userId) => {
-          println("a")
-          entity(as[Address]) { address =>
-            val savedAddress = AddressService.insertUserAddress(userId, address.title, address.city, address.region, address.zipcode, address.fullAddress)
-            onComplete(savedAddress) {
-              case Success(savedAddress) => {
-                logger.info(s"Inserted person with id:${savedAddress}")
-                complete(JsObject("updatedRows" -> JsNumber(savedAddress)))
-              }
-              case Failure(e) => {
-                println(s"Failed to insert a person address", e)
+      path(LongNumber / "address") {
+        (userId) => {
+        entity(as[Address]) { address =>
+          val savedAddress = AddressService.insertUserAddress(userId, address.title, address.city, address.region, address.zipcode, address.fullAddress)
+          onComplete(savedAddress) {
+            case Success(savedAddress) => {
+              logger.info(s"Inserted person with id:${savedAddress}")
+              complete(JsObject("updatedRows" -> JsNumber(savedAddress)))
+            }
+            case Failure(e) => {
+              println(s"Failed to insert a person address", e)
                 complete(StatusCodes.InternalServerError)
               }
             }
           }
-        } ~ pathEndOrSingleSlash {
-          entity(as[User]) { user =>
-            val saved = dbService.insertUser(user.name, user.surname, user.email, user.phone)
-            onComplete(saved) {
-              case Success(savedUser) => {
-                logger.info(s"Inserted person with id:${savedUser.id}")
-                complete(savedUser)
-              }
-              case Failure(e) => {
-                logger.error(s"Failed to insert a person ${user.id}", e)
-                complete(StatusCodes.InternalServerError)
-              }
+      }
+    } ~
+      pathEndOrSingleSlash {
+      entity(as[User]) { user =>
+        val saved = dbService.insertUser(user.name, user.surname, user.email, user.phone)
+        onComplete(saved) {
+          case Success(savedUser) => {
+            logger.info(s"Inserted person with id:${savedUser.id}")
+            complete(savedUser)
+          }
+          case Failure(e) => {
+            logger.error(s"Failed to insert a person ${user.id}", e)
+            complete(StatusCodes.InternalServerError)
             }
           }
         }
       }
     } ~
     put {
-      path(Segment) { id =>
+      path(LongNumber) { id =>
         entity(as[User]) { user =>
           val updated = dbService.update(id, user)
           onComplete(updated) {
@@ -86,7 +87,7 @@ class UserController(dbService: UserService) extends SprayJsonSupport with Defau
       }
     } ~
     delete {
-      path(Segment) { id =>
+      path(LongNumber) { id =>
         val deleted = dbService.delete(id)
         onComplete(deleted) {
           case Success(updatedRows) => complete(JsObject("deletedRows" -> JsNumber(updatedRows)))
