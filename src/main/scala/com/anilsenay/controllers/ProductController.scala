@@ -31,7 +31,7 @@ class ProductController(dbService: ProductService.type) extends SprayJsonSupport
               complete(result)
             }
             case Failure(e) => {
-              println(e)
+              logger.error(s"Failed to fetch product $productId", e)
               complete(StatusCodes.InternalServerError)
             }
           }
@@ -51,7 +51,7 @@ class ProductController(dbService: ProductService.type) extends SprayJsonSupport
                 complete(JsObject("InsertedPhotos" -> JsNumber(savedProductImages.flatten.length)))
               }
               case Failure(e) => {
-                println(s"Failed to insert images", e)
+                logger.error(s"Failed to insert product", e)
                 complete(StatusCodes.InternalServerError)
               }
             }
@@ -68,7 +68,7 @@ class ProductController(dbService: ProductService.type) extends SprayJsonSupport
                 complete(JsObject("InsertedSizes" -> JsNumber(savedProductSizes.flatten.length)))
               }
               case Failure(e) => {
-                println(s"Failed to insert sizes", e)
+                logger.error(s"Failed to insert product", e)
                 complete(StatusCodes.InternalServerError)
               }
             }
@@ -88,7 +88,7 @@ class ProductController(dbService: ProductService.type) extends SprayJsonSupport
               ))
             }
             case Failure(e) => {
-              println(s"Failed to insert  product", e)
+              logger.error(s"Failed to insert product", e)
               complete(StatusCodes.InternalServerError)
             }
           }
@@ -119,7 +119,7 @@ class ProductController(dbService: ProductService.type) extends SprayJsonSupport
               complete(JsObject("InsertedSizes" -> JsNumber(savedProductSizes)))
             }
             case Failure(e) => {
-              println(s"Failed to insert sizes", e)
+              logger.error(s"Failed to delete sizes ${productId}", e)
               complete(StatusCodes.InternalServerError)
             }
           }
@@ -129,14 +129,13 @@ class ProductController(dbService: ProductService.type) extends SprayJsonSupport
         (productId) => {
           entity(as[Seq[String]]) { photos =>
             val saved = dbService.deleteImage(productId, photos)
-            println("assdassa")
             onComplete(saved) {
               case Success(savedProductSizes) => {
                 logger.info(s"Inserted sizes to product with id:${productId}")
                 complete(JsObject("InsertedSizes" -> JsNumber(savedProductSizes)))
               }
               case Failure(e) => {
-                println(s"Failed to insert sizes", e)
+                logger.error(s"Failed to delete images ${productId}", e)
                 complete(StatusCodes.InternalServerError)
               }
             }

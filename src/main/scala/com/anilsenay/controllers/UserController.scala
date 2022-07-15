@@ -34,7 +34,7 @@ class UserController(dbService: UserService.type) extends SprayJsonSupport with 
 
                 }
                 case Failure(e) => {
-                  println(e)
+                  logger.error(s"Failed to fetch user ${userId}", e)
                   complete(StatusCodes.InternalServerError)
                 }
               }
@@ -56,8 +56,8 @@ class UserController(dbService: UserService.type) extends SprayJsonSupport with 
               complete(JsObject("updatedRows" -> JsNumber(savedAddress)))
             }
             case Failure(e) => {
-              println(s"Failed to insert a person address", e)
-                complete(StatusCodes.InternalServerError)
+              logger.error(s"Failed to insert person address ${userId}", e)
+              complete(StatusCodes.InternalServerError)
               }
             }
           }

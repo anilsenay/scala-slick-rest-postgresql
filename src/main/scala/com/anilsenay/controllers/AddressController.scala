@@ -58,7 +58,7 @@ class AddressController(dbService: AddressService.type) extends SprayJsonSupport
         onComplete(deleted) {
           case Success(updatedRows) => complete(JsObject("deletedRows" -> JsNumber(updatedRows)))
           case Failure(e) => {
-            println(e)
+            logger.error(s"Failed to delete a person ${id}", e)
             complete(StatusCodes.InternalServerError)
           }
         }
