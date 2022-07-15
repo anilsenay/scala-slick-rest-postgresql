@@ -1,7 +1,6 @@
 package com.anilsenay.schema
 
 import com.anilsenay.models.Address
-import com.anilsenay.schema.UserAddressTable.UserAddresses
 import slick.jdbc.PostgresProfile.api._
 
 object AddressTable {

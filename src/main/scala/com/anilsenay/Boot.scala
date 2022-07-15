@@ -12,8 +12,7 @@ object Boot extends App with StrictLogging {
   private implicit val materializer = ActorMaterializer()
   private implicit val ec = system.dispatcher
 
-  val database = PostgresDb.db
-  val restService = RootRoute(database)
+  val restService = RootRoute()
 
   Http()
     .bindAndHandle(restService, "localhost", 8080)

@@ -5,13 +5,13 @@ import com.anilsenay.models.{FullProduct, Product, ProductImage, ProductSize, Pr
 import com.anilsenay.schema.BrandTable.brands
 import com.anilsenay.schema.CategoryTable.categories
 import com.anilsenay.schema.ProductImageTable.productImages
-import com.anilsenay.schema.ProductSizeTable.{ProductSizes, productSizes}
+import com.anilsenay.schema.ProductSizeTable.productSizes
 import slick.jdbc.PostgresProfile.api._
 
-import java.sql.{Date, Timestamp}
-import scala.concurrent.{ExecutionContext, Future}
+import java.sql.Timestamp
+import scala.concurrent.Future
 
-class ProductService(db: Database)(implicit ec: ExecutionContext) {
+object ProductService extends BaseService {
   def getAllProducts: Future[Seq[FullProduct]] = {
     println("all")
 

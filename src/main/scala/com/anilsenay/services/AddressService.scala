@@ -8,6 +8,10 @@ import slick.jdbc.PostgresProfile.api._
 import java.util.UUID
 import scala.concurrent.Future
 
+class AddressService {
+
+}
+
 object AddressService extends BaseService {
 
   def getAllAddress: Future[Seq[Address]] = db.run(addresses.result)

@@ -8,11 +8,11 @@ import scala.concurrent.ExecutionContext
 import akka.http.scaladsl.server.Route
 
 object RootRoute {
-  def apply(db: Database)(implicit ec: ExecutionContext): Route = {
-    new UserController(new UserService(db)).route ~
-    new AddressController().route ~
-    new ProductController(new ProductService(db)).route ~
-    new CategoryController(new CategoryService(db)).route ~
-    new BrandController(new BrandService(db)).route
+  def apply(): Route = {
+    new UserController(UserService).route ~
+    new AddressController(AddressService).route ~
+    new ProductController(ProductService).route ~
+    new CategoryController(CategoryService).route ~
+    new BrandController(BrandService).route
   }
 }

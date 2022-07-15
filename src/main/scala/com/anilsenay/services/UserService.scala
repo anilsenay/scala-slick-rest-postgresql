@@ -1,15 +1,14 @@
 package com.anilsenay.services
 
-import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import com.anilsenay.models.{User, UserWithAddress}
 import com.anilsenay.schema.UsersTable._
 import com.anilsenay.schema.AddressTable._
 import com.anilsenay.schema.UserAddressTable._
 import slick.jdbc.PostgresProfile.api._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class UserService(db: Database)(implicit ec: ExecutionContext) {
+object UserService extends BaseService {
   def getAllPeople: Future[Seq[User]] = db.run(users.result)
 
   def getUser(id: Long): Future[Option[User]] = {

@@ -4,9 +4,9 @@ import com.anilsenay.models.Brand
 import com.anilsenay.schema.BrandTable._
 import slick.jdbc.PostgresProfile.api._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class BrandService(db: Database)(implicit ec: ExecutionContext) {
+object BrandService extends BaseService {
   def getAllBrands: Future[Seq[Brand]] = db.run(brands.result)
 
   def insertBrand(brandName: String) = {

@@ -11,20 +11,20 @@ import spray.json._
 
 import scala.util.{Failure, Success}
 
-class AddressController extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
+class AddressController(dbService: AddressService.type) extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
   val route: Route = pathPrefix("api" / "address") {
     get {
       pathEndOrSingleSlash {
-        complete(AddressService.getAllAddress)
+        complete(dbService.getAllAddress)
       } ~
         path(LongNumber) { addressId =>
-          complete(AddressService.getAddress(addressId))
+          complete(dbService.getAddress(addressId))
         }
     } ~
     post {
       pathEndOrSingleSlash {
         entity(as[Address]) { address =>
-          val saved = AddressService.insertAddress(address.title, address.city, address.region, address.zipcode, address.fullAddress)
+          val saved = dbService.insertAddress(address.title, address.city, address.region, address.zipcode, address.fullAddress)
           onComplete(saved) {
             case Success(savedAddress) => {
               logger.info(s"Inserted person with id:${savedAddress.id}")
@@ -41,7 +41,7 @@ class AddressController extends SprayJsonSupport with DefaultJsonProtocol with L
     put {
       path(LongNumber) { id =>
         entity(as[Address]) { address =>
-          val updated = AddressService.update(id, address)
+          val updated = dbService.update(id, address)
           onComplete(updated) {
             case Success(updatedRows) => complete(JsObject("updatedRows" -> JsNumber(updatedRows)))
             case Failure(e) => {
@@ -54,7 +54,7 @@ class AddressController extends SprayJsonSupport with DefaultJsonProtocol with L
     } ~
     delete {
       path(LongNumber) { id =>
-        val deleted = AddressService.delete(id)
+        val deleted = dbService.delete(id)
         onComplete(deleted) {
           case Success(updatedRows) => complete(JsObject("deletedRows" -> JsNumber(updatedRows)))
           case Failure(e) => {

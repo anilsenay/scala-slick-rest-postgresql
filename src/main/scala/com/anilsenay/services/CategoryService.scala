@@ -4,9 +4,9 @@ import com.anilsenay.models.Category
 import com.anilsenay.schema.CategoryTable._
 import slick.jdbc.PostgresProfile.api._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class CategoryService(db: Database)(implicit ec: ExecutionContext) {
+object CategoryService extends BaseService {
   def getAllCategories: Future[Seq[Category]] = db.run(categories.result)
 
   def insertCategory(categoryName: String) = {

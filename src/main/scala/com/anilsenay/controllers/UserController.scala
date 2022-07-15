@@ -11,7 +11,7 @@ import spray.json._
 
 import scala.util.{Failure, Success}
 
-class UserController(dbService: UserService) extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
+class UserController(dbService: UserService.type) extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
   val route: Route = pathPrefix("api" / "user") {
     get {
       pathEndOrSingleSlash {
