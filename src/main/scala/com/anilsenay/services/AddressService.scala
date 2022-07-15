@@ -3,9 +3,8 @@ package com.anilsenay.services
 import com.anilsenay.models.{Address, UserAddress}
 import com.anilsenay.schema.AddressTable._
 import com.anilsenay.schema.UserAddressTable.userAddresses
-import slick.jdbc.PostgresProfile.api._
+import com.anilsenay.utils.SelectedProfile.api._
 
-import java.util.UUID
 import scala.concurrent.Future
 
 class AddressService {

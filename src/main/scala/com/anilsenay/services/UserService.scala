@@ -4,7 +4,7 @@ import com.anilsenay.models.{User, UserWithAddress}
 import com.anilsenay.schema.UsersTable._
 import com.anilsenay.schema.AddressTable._
 import com.anilsenay.schema.UserAddressTable._
-import slick.jdbc.PostgresProfile.api._
+import com.anilsenay.utils.SelectedProfile.api._
 
 import scala.concurrent.Future
 

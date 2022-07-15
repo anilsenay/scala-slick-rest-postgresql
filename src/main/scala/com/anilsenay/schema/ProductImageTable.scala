@@ -2,7 +2,7 @@ package com.anilsenay.schema
 
 import com.anilsenay.models.ProductImage
 import com.anilsenay.schema.ProductTable.Products
-import slick.jdbc.PostgresProfile.api._
+import com.anilsenay.utils.SelectedProfile.api._
 
 object ProductImageTable {
 

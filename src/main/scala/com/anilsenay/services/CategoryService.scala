@@ -2,7 +2,7 @@ package com.anilsenay.services
 
 import com.anilsenay.models.Category
 import com.anilsenay.schema.CategoryTable._
-import slick.jdbc.PostgresProfile.api._
+import com.anilsenay.utils.SelectedProfile.api._
 
 import scala.concurrent.Future
 

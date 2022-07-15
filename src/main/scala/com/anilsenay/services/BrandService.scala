@@ -2,7 +2,7 @@ package com.anilsenay.services
 
 import com.anilsenay.models.Brand
 import com.anilsenay.schema.BrandTable._
-import slick.jdbc.PostgresProfile.api._
+import com.anilsenay.utils.SelectedProfile.api._
 
 import scala.concurrent.Future
 

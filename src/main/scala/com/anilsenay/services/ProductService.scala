@@ -6,7 +6,7 @@ import com.anilsenay.schema.BrandTable.brands
 import com.anilsenay.schema.CategoryTable.categories
 import com.anilsenay.schema.ProductImageTable.productImages
 import com.anilsenay.schema.ProductSizeTable.productSizes
-import slick.jdbc.PostgresProfile.api._
+import com.anilsenay.utils.SelectedProfile.api._
 
 import java.sql.Timestamp
 import scala.concurrent.Future

@@ -3,7 +3,7 @@ package com.anilsenay.schema
 import com.anilsenay.models.Product
 import com.anilsenay.schema.BrandTable.Brands
 import com.anilsenay.schema.CategoryTable.Categories
-import slick.jdbc.PostgresProfile.api._
+import com.anilsenay.utils.SelectedProfile.api._
 
 import java.sql.Timestamp
 

@@ -3,7 +3,7 @@ package com.anilsenay.schema
 import com.anilsenay.models.UserAddress
 import com.anilsenay.schema.UsersTable.Users
 import com.anilsenay.schema.AddressTable.Addresses
-import slick.jdbc.PostgresProfile.api._
+import com.anilsenay.utils.SelectedProfile.api._
 
 object UserAddressTable {
 

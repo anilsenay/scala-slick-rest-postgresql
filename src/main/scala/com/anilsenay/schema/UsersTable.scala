@@ -1,7 +1,7 @@
 package com.anilsenay.schema
 
 import com.anilsenay.models.User
-import slick.jdbc.PostgresProfile.api._
+import com.anilsenay.utils.SelectedProfile.api._
 
 object UsersTable {
 
