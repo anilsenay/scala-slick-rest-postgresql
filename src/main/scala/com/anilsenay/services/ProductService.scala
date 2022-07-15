@@ -59,12 +59,17 @@ class ProductService(db: Database)(implicit ec: ExecutionContext) {
     }
   }
 
-  def getAllProductsWithFilter(cat: String, sort: String, min: Double = -1, max: Double = Double.MaxValue): Future[Seq[FullProduct]] = {
+  def getAllProductsWithFilter(cat: String, sort: String, min: Double = -1, max: Double = Double.MaxValue, brandName: String): Future[Seq[FullProduct]] = {
     println("filter")
     db.run {
       val productQuery = (for {
         product <- products.filter(_.salePrice >= min).filter(_.salePrice <= max)
-        brand <- brands.filter(_.id === product.brandId)
+        brand <- {
+          brandName match {
+            case brandName if brandName.nonEmpty => brands.filter(_.id === product.brandId).filter(_.brandName === brandName)
+            case _ => brands.filter(_.id === product.brandId)
+          }
+        }
         category <- {
           cat match {
             case cat if cat.nonEmpty => categories.filter(_.id === product.categoryId).filter(_.categoryName === cat)

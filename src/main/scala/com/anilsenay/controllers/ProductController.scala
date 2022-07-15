@@ -18,9 +18,10 @@ class ProductController(dbService: ProductService) extends SprayJsonSupport with
         "sort".as[String],
         "category".as[String],
         "min".as[Double].withDefault(-1),
-        "max".as[Double].withDefault(Double.MaxValue)
-      ) { (sort, category, min, max) =>
-        complete(dbService.getAllProductsWithFilter(category, sort, min, max))
+        "max".as[Double].withDefault(Double.MaxValue),
+        "brand".as[String]
+      ) { (sort, category, min, max, brand) =>
+        complete(dbService.getAllProductsWithFilter(category, sort, min, max, brand))
       } ~
       path(LongNumber) {
         (productId) => {
