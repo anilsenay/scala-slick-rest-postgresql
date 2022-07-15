@@ -197,10 +197,7 @@ class ProductService(db: Database)(implicit ec: ExecutionContext) {
   }
 
   def deleteImage(productId: Long, photos: Seq[String] = Seq()) = {
-    // TODO: This function deletes all products for now
-    db.run {
-      productImages.filter(_.productId === productId).delete
-    }
+    db.run(productImages.filter(_.productId === productId).filter(_.url.inSet(photos)).delete)
   }
 
 }
