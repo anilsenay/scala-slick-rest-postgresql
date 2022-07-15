@@ -5,6 +5,8 @@ import com.anilsenay.schema.BrandTable.Brands
 import com.anilsenay.schema.CategoryTable.Categories
 import slick.jdbc.PostgresProfile.api._
 
+import java.sql.Timestamp
+
 object ProductTable {
 
   class Products(tag: Tag) extends Table[Product](tag, "product") {
@@ -16,9 +18,10 @@ object ProductTable {
     def information = column[String]("information")
     def price = column[Double]("price")
     def salePrice = column[Double]("sale_price")
+    def createdAt = column[Timestamp]("created_at")
 
     def * =
-      (id, productName, coverPhotoIndex, information, price, salePrice, brandId, categoryId) <> ((Product.apply _).tupled, Product.unapply)
+      (id, productName, coverPhotoIndex, information, price, salePrice, brandId, categoryId, createdAt) <> ((Product.apply _).tupled, Product.unapply)
 
     def brand = foreignKey("fk_brand", brandId, TableQuery[Brands])(_.id)
     def category = foreignKey("fk_category", categoryId, TableQuery[Categories])(_.id)

@@ -15,11 +15,11 @@ class ProductController(dbService: ProductService) extends SprayJsonSupport with
   val route: Route = pathPrefix("api" / "product") {
     get {
       parameters(
-        "sort".as[String],
-        "category".as[String],
+        "sort".as[String].optional,
+        "category".as[String].optional,
         "min".as[Double].withDefault(-1),
         "max".as[Double].withDefault(Double.MaxValue),
-        "brand".as[String]
+        "brand".as[String].optional
       ) { (sort, category, min, max, brand) =>
         complete(dbService.getAllProductsWithFilter(category, sort, min, max, brand))
       } ~

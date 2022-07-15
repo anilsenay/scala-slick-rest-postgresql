@@ -8,6 +8,7 @@ import com.anilsenay.schema.ProductImageTable.productImages
 import com.anilsenay.schema.ProductSizeTable.{ProductSizes, productSizes}
 import slick.jdbc.PostgresProfile.api._
 
+import java.sql.{Date, Timestamp}
 import scala.concurrent.{ExecutionContext, Future}
 
 class ProductService(db: Database)(implicit ec: ExecutionContext) {
@@ -46,20 +47,21 @@ class ProductService(db: Database)(implicit ec: ExecutionContext) {
       withSizes.result
     }.map {
       tuples =>
-        tuples.groupBy(_._1._1._1).map{
+        val sequence = tuples.groupBy(_._1._1._1).map{
           case (p, tuples) => {
             val brand = tuples.map(_._1._1._2).headOption
             val category = tuples.map(_._1._1._3).headOption
             val photos = tuples.map(_._1._2.map(_.url)).distinct.flatten
             val sizes = tuples.map(_._2.map(_.size)).distinct.flatten
 
-            FullProduct(p.id, p.productName, p.coverPhotoIndex, p.information, p.price, p.salePrice, brand, category, photos, sizes)
+            FullProduct(p.id, p.productName, p.coverPhotoIndex, p.information, p.price, p.salePrice, brand, category, photos, sizes, p.createdAt)
           }
         }.toSeq
+        sequence.sortBy(_.createdAt)(Ordering[Timestamp].reverse)
     }
   }
 
-  def getAllProductsWithFilter(cat: String, sort: String, min: Double = -1, max: Double = Double.MaxValue, brandName: String): Future[Seq[FullProduct]] = {
+  def getAllProductsWithFilter(cat: Option[String], sort: Option[String], min: Double = -1, max: Double = Double.MaxValue, brandName: Option[String]): Future[Seq[FullProduct]] = {
     println("filter")
     db.run {
       val productQuery = (for {
@@ -96,16 +98,16 @@ class ProductService(db: Database)(implicit ec: ExecutionContext) {
             val photos = tuples.map(_._1._2.map(_.url)).distinct.flatten
             val sizes = tuples.map(_._2.map(_.size)).distinct.flatten
 
-            FullProduct(p.id, p.productName, p.coverPhotoIndex, p.information, p.price, p.salePrice, brand, category, photos, sizes)
+            FullProduct(p.id, p.productName, p.coverPhotoIndex, p.information, p.price, p.salePrice, brand, category, photos, sizes, p.createdAt)
           }
         }.toSeq
 
-        sort match {
+        sort.getOrElse("") match {
           case "asc" => sequence.sortBy(_.salePrice)
           case "desc" => sequence.sortBy(_.salePrice)(Ordering[Double].reverse)
           case "a-z" => sequence.sortBy(_.productName.toLowerCase)
           case "z-a" => sequence.sortBy(_.productName.toLowerCase)(Ordering[String].reverse)
-          case _ => sequence.sortBy(_.salePrice)
+          case _ => sequence.sortBy(_.createdAt)(Ordering[Timestamp].reverse)
         }
     }
   }
@@ -136,17 +138,17 @@ class ProductService(db: Database)(implicit ec: ExecutionContext) {
             val photos = tuples.map(_._1._2.map(_.url)).distinct.flatten
             val sizes = tuples.map(_._2.map(_.size)).distinct.flatten
 
-            FullProduct(p.id, p.productName, p.coverPhotoIndex, p.information, p.price, p.salePrice, brand, category, photos, sizes)
+            FullProduct(p.id, p.productName, p.coverPhotoIndex, p.information, p.price, p.salePrice, brand, category, photos, sizes, p.createdAt)
           }
         }.toSeq.headOption
     }
   }
 
   def insertProduct(productName: String, coverPhotoIndex: Int, information: String, price: Double, salePrice: Double, brandId: Option[Long], categoryId: Option[Long], photos: Seq[String] = Seq(), sizes: Seq[String] = Seq()): Future[(Product, Seq[Option[Long]], Seq[Option[Long]])] = {
-    val action = (products.map(product => (product.productName, product.coverPhotoIndex, product.information, product.price, product.salePrice, product.brandId, product.categoryId)) returning products
+    val action = (products.map(product => (product.productName, product.coverPhotoIndex, product.information, product.price, product.salePrice, product.brandId, product.categoryId, product.createdAt)) returning products
       .map(_.id) into (
-      (productData, id) => Product(id, productData._1, productData._2, productData._3, productData._4, productData._5, productData._6, productData._7)
-      )) += (productName, coverPhotoIndex, information, price, salePrice, brandId, categoryId)
+      (productData, id) => Product(id, productData._1, productData._2, productData._3, productData._4, productData._5, productData._6, productData._7, productData._8)
+      )) += (productName, coverPhotoIndex, information, price, salePrice, brandId, categoryId, new Timestamp(System.currentTimeMillis()))
 
     (for {
       product <- db.run(action)

@@ -1,6 +1,8 @@
 package com.anilsenay.models
 
-import spray.json.DefaultJsonProtocol
+import com.anilsenay.utils.BaseJsonProtocol
+
+import java.sql.Timestamp
 
 case class Product(
                   id: Option[Long],
@@ -10,11 +12,12 @@ case class Product(
                   price: Double,
                   salePrice: Double,
                   brandId: Option[Long],
-                  categoryId: Option[Long]
+                  categoryId: Option[Long],
+                  createdAt: Timestamp
                 )
 
-object Product extends DefaultJsonProtocol {
-  implicit val productFormat = jsonFormat8(Product.apply)
+object Product extends BaseJsonProtocol {
+  implicit val productFormat = jsonFormat9(Product.apply)
 }
 
 case class ProductPost(
@@ -28,25 +31,25 @@ case class ProductPost(
                     categoryId: Option[Long],
                     photos: Seq[String],
                     sizes: Seq[String]
-                  )
+                    )
 
-object ProductPost extends DefaultJsonProtocol {
+object ProductPost extends BaseJsonProtocol {
   implicit val productFormat = jsonFormat10(ProductPost.apply)
 }
 
 case class ProductUpdate(
-                        productName: Option[String],
-                        coverPhotoIndex: Option[Int],
-                        information: Option[String],
-                        price: Option[Double],
-                        salePrice: Option[Double],
-                        brandId: Option[Option[Long]],
-                        categoryId: Option[Option[Long]],
-                        photos: Option[Seq[String]],
-                        sizes: Option[Seq[String]]
-                      )
+                          productName: Option[String],
+                          coverPhotoIndex: Option[Int],
+                          information: Option[String],
+                          price: Option[Double],
+                          salePrice: Option[Double],
+                          brandId: Option[Option[Long]],
+                          categoryId: Option[Option[Long]],
+                          photos: Option[Seq[String]],
+                          sizes: Option[Seq[String]]
+                        )
 
-object ProductUpdate extends DefaultJsonProtocol {
+object ProductUpdate extends BaseJsonProtocol {
   implicit val productFormat = jsonFormat9(ProductUpdate.apply)
 }
 
@@ -60,9 +63,10 @@ case class FullProduct(
                     brand: Option[Brand],
                     category: Option[Category],
                     photos: Seq[String],
-                    sizes: Seq[String]
-                  )
+                    sizes: Seq[String],
+                    createdAt: Timestamp,
+                      )
 
-object FullProduct extends DefaultJsonProtocol {
-  implicit val productFormat = jsonFormat10(FullProduct.apply)
+object FullProduct extends BaseJsonProtocol {
+  implicit val productFormat = jsonFormat11(FullProduct.apply)
 }

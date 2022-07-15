@@ -35,14 +35,15 @@ CREATE TABLE IF NOT EXISTS "category" (
 );
 
 CREATE TABLE IF NOT EXISTS "product" (
-                                         id SERIAL UNIQUE primary key,
-                                         brand_id BIGINT,
-                                         category_id BIGINT,
-                                         product_name VARCHAR NOT NULL,
-                                         information VARCHAR,
-                                         cover_photo_index smallint DEFAULT 0,
-                                         price DECIMAL(12,2),
+    id SERIAL UNIQUE primary key,
+    brand_id BIGINT,
+    category_id BIGINT,
+    product_name VARCHAR NOT NULL,
+    information VARCHAR,
+    cover_photo_index smallint DEFAULT 0,
+    price DECIMAL(12,2),
     sale_price DECIMAL(12,2),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_brand FOREIGN KEY(brand_id) REFERENCES brand(id),
     CONSTRAINT fk_category FOREIGN KEY(category_id) REFERENCES category(id)
     );
