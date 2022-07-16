@@ -69,7 +69,8 @@ CREATE TABLE IF NOT EXISTS "orders" (
                                         address_id BIGINT,
                                         total_price decimal(12,2) NOT NULL,
     status varchar DEFAULT 'preparing',
-    date timestamptz DEFAULT CURRENT_TIMESTAMP,
+    created_at timestamptz DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamptz DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
     CONSTRAINT fk_address FOREIGN KEY(address_id) REFERENCES address(id)
     );
@@ -78,8 +79,10 @@ CREATE TABLE IF NOT EXISTS "order_product" (
                                                order_id BIGINT,
                                                product_id BIGINT,
                                                quantity smallint DEFAULT 1 NOT NULL,
+                                               size varchar,
+                                               price decimal(12,2) NOT NULL,
                                                CONSTRAINT fk_product FOREIGN KEY(product_id) REFERENCES product(id),
-    CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES orders(id),
+    CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES orders(id) ON delete cascade,
     PRIMARY KEY(order_id, product_id)
     );
 
