@@ -14,15 +14,6 @@ import scala.util.{Failure, Success}
 class ProductController(dbService: ProductService.type) extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
   val route: Route = pathPrefix("api" / "product") {
     get {
-      parameters(
-        "sort".as[String].optional,
-        "category".as[String].optional,
-        "min".as[Double].withDefault(-1),
-        "max".as[Double].withDefault(Double.MaxValue),
-        "brand".as[String].optional
-      ) { (sort, category, min, max, brand) =>
-        complete(dbService.getAllProductsWithFilter(category, sort, min, max, brand))
-      } ~
       path(LongNumber) {
         (productId) => {
           val q = dbService.getProduct(productId)
@@ -36,8 +27,16 @@ class ProductController(dbService: ProductService.type) extends SprayJsonSupport
             }
           }
         }
-      } ~
-      pathEndOrSingleSlash {
+      } ~ parameters(
+        "sort".as[String].optional,
+        "category".as[String].optional,
+        "min".as[Double].withDefault(-1),
+        "max".as[Double].withDefault(Double.MaxValue),
+        "brand".as[String].optional,
+        "page".as[Int].optional
+      ) { (sort, category, min, max, brand, page) =>
+        complete(dbService.getAllProductsWithFilter(category, sort, min, max, brand, page))
+      } ~ pathEndOrSingleSlash {
         complete(dbService.getAllProducts)
       }
     } ~ post {

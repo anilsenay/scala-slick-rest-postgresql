@@ -12,23 +12,13 @@ import java.sql.Timestamp
 import scala.concurrent.Future
 
 object ProductService extends BaseService {
+
+  val productsInPage = 10
+  val skipProductByPage: Option[Int] => Int = (page: Option[Int]) =>
+    if (page.nonEmpty && page.get > 0) (page.get - 1) * productsInPage else 0
+
   def getAllProducts: Future[Seq[FullProduct]] = {
     println("all")
-
-    /*db.run {
-      (for {
-        product <- products
-        brand <- brands.filter(_.id === product.brandId)
-        category <- categories.filter(_.id === product.categoryId)
-        photo <- productImages.filter(_.productId === product.id)
-        sizes <- productSizes.filter(_.productId === product.id)
-      } yield (product, brand, category, photo, sizes)).result.map {
-        _.groupBy(_._1)
-          .map {
-            case (p, seq) => FullProduct(p.id, p.productName, p.coverPhotoIndex, p.information, p.price, p.salePrice, seq.map(_._2).headOption, seq.map(_._3).headOption, seq.map(i => Some(i._4.url)).distinct, seq.map(i => Some(i._5)).distinct)
-          }.toSeq
-      }
-    }*/
     db.run {
       val productQuery = (for {
         product <- products
@@ -61,11 +51,20 @@ object ProductService extends BaseService {
     }
   }
 
-  def getAllProductsWithFilter(cat: Option[String], sort: Option[String], min: Double = -1, max: Double = Double.MaxValue, brandName: Option[String]): Future[Seq[FullProduct]] = {
+  def getAllProductsWithFilter(cat: Option[String], sort: Option[String], min: Double = -1, max: Double = Double.MaxValue, brandName: Option[String], page: Option[Int] = None) = {
     println("filter")
     db.run {
-      val productQuery = (for {
-        product <- products.filter(_.salePrice >= min).filter(_.salePrice <= max)
+      val productQuery = for {
+        product <- {
+          val query = products.filter(_.salePrice >= min).filter(_.salePrice <= max)
+          sort.getOrElse("") match {
+            case "asc" => query.sortBy(_.salePrice)
+            case "desc" => query.sortBy(_.salePrice.desc)
+            case "a-z" => query.sortBy(_.productName.toLowerCase)
+            case "z-a" => query.sortBy(_.productName.toLowerCase.desc)
+            case _ => query.sortBy(_.createdAt.desc)
+          }
+        }
         brand <- {
           brandName match {
             case brandName if brandName.nonEmpty => brands.filter(_.id === product.brandId).filter(_.brandName === brandName)
@@ -78,10 +77,15 @@ object ProductService extends BaseService {
             case _ => categories.filter(_.id === product.categoryId)
           }
         }
-      } yield (product, brand, category))
+      } yield (product, brand, category)
+
+      val withPagination = page match {
+        case page if page.nonEmpty => productQuery.drop(skipProductByPage(page)).take(productsInPage)
+        case _ => productQuery
+      }
 
       val withPhotos = for {
-        (person, photos) <- productQuery.joinLeft(productImages).on(_._1.id === _.productId)
+        (person, photos) <- withPagination.joinLeft(productImages).on(_._1.id === _.productId)
       } yield (person, photos)
 
       val withSizes = for {
