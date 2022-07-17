@@ -9,7 +9,7 @@ case class Order(
                   userId: Option[Long],
                   addressId: Option[Long],
                   totalPrice: Double,
-                  status: String,
+                  status: Int,
                   createdAt: Timestamp,
                   updatedAt: Timestamp,
                 )
@@ -23,7 +23,7 @@ case class FullOrder(
                   user: Option[User],
                   address: Option[Address],
                   totalPrice: Double,
-                  status: String,
+                  status: Int,
                   createdAt: Timestamp,
                   updatedAt: Timestamp,
                   products: Seq[OrderFullProduct]

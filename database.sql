@@ -68,11 +68,12 @@ CREATE TABLE IF NOT EXISTS "orders" (
                                         user_id BIGINT,
                                         address_id BIGINT,
                                         total_price decimal(12,2) NOT NULL,
-    status varchar DEFAULT 'preparing',
+    order_status smallint DEFAULT 0,
     created_at timestamptz DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamptz DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id),
-    CONSTRAINT fk_address FOREIGN KEY(address_id) REFERENCES address(id)
+    CONSTRAINT fk_address FOREIGN KEY(address_id) REFERENCES address(id),
+    CONSTRAINT fk_status FOREIGN KEY(order_status) REFERENCES order_status(id)
     );
 
 CREATE TABLE IF NOT EXISTS "order_product" (
@@ -85,6 +86,11 @@ CREATE TABLE IF NOT EXISTS "order_product" (
     CONSTRAINT fk_order FOREIGN KEY(order_id) REFERENCES orders(id) ON delete cascade,
     PRIMARY KEY(order_id, product_id)
     );
+
+CREATE TABLE IF NOT EXISTS "order_status" (
+                                              id SERIAL UNIQUE primary key,
+                                              status VARCHAR NOT NULL
+);
 
 /* DATA */
 INSERT INTO users(name, surname, phone, email)
@@ -113,3 +119,8 @@ INSERT INTO product_photo(url, product_id) VALUES ('http://imageurl.com/image3.p
 
 INSERT INTO orders(address_id, user_id, total_price) VALUES ((SELECT id FROM address LIMIT 1), (SELECT id from users WHERE name='anil'), 1999);
 INSERT INTO order_product(order_id, product_id, quantity) VALUES ((SELECT id FROM orders LIMIT 1), (SELECT id FROM product LIMIT 1), 1);
+
+Insert Into order_status (status) VALUES ('Preparing');
+Insert Into order_status (status) VALUES ('Cancelled');
+Insert Into order_status (status) VALUES ('Shipped');
+Insert Into order_status (status) VALUES ('Completed');

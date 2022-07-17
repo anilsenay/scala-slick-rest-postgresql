@@ -14,7 +14,7 @@ object OrderTable {
     def userId = column[Option[Long]]("user_id")
     def addressId = column[Option[Long]]("address_id")
     def totalPrice = column[Double]("total_price")
-    def status = column[String]("status", O.Default("preparing"))
+    def status = column[Int]("order_status", O.Default(0))
     def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
     def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
 

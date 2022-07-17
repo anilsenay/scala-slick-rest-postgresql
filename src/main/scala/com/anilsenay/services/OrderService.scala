@@ -5,7 +5,6 @@ import com.anilsenay.schema.AddressTable._
 import com.anilsenay.schema.BrandTable.brands
 import com.anilsenay.schema.CategoryTable.categories
 import com.anilsenay.schema.OrderProductTable._
-import com.anilsenay.schema.UserAddressTable._
 import com.anilsenay.schema.OrderTable._
 import com.anilsenay.schema.ProductImageTable.productImages
 import com.anilsenay.schema.ProductTable.products
@@ -110,7 +109,7 @@ object OrderService extends BaseService {
         inserted <- (orders.map(o => (o.userId, o.addressId, o.totalPrice, o.status, o.createdAt, o.updatedAt)) returning orders
           .map(_.id) into (
           (data, id) => Order(id, data._1, data._2, data._3, data._4, data._5, data._6)
-          )) += (order.userId, order.addressId, productList.map(_.salePrice).sum, "preparing", now, now)
+          )) += (order.userId, order.addressId, productList.map(_.salePrice).sum, 0, now, now)
         _ <- DBIO.seq(
           orderProducts ++= order.products.map(i =>
             OrderProduct(inserted.id, Some(i.id), i.quantity, i.size, productList.filter(_.id.get == i.id).head.salePrice)
@@ -120,7 +119,7 @@ object OrderService extends BaseService {
     }
   }
 
-  def update(id: Long, status: String): Future[Int] = {
+  def update(id: Long, status: Int): Future[Int] = {
     val action = orders
       .filter(_.id === id)
       .map(o => (o.status, o.updatedAt))

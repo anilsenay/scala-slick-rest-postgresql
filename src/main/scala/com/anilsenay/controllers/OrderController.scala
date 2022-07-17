@@ -62,7 +62,7 @@ class OrderController(dbService: OrderService.type) extends SprayJsonSupport wit
     put {
       path(LongNumber / IntNumber) { (id, status) =>
         val statusList = List("preparing", "canceled", "completed", "shipping")
-        val updated = dbService.update(id, statusList(status))
+        val updated = dbService.update(id, status)
         onComplete(updated) {
           case Success(updatedRows) => complete(JsObject("updatedRows" -> JsNumber(updatedRows)))
           case Failure(e) => {
