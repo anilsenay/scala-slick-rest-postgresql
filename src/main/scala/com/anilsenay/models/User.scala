@@ -2,8 +2,13 @@ package com.anilsenay.models
 
 import spray.json.DefaultJsonProtocol
 
-case class Person(id: Option[Long], name: String, surname: String)
+case class User(id: Option[Long], name: String, surname: String, email: String, phone: String)
+case class UserWithAddress(id: Option[Long], name: String, surname: String, email: String, phone: String, address: Seq[Address])
 
-object Person extends DefaultJsonProtocol {
-  implicit val personFormat = jsonFormat3(Person.apply)
+object User extends DefaultJsonProtocol {
+  implicit val userFormat = jsonFormat5(User.apply)
+}
+
+object UserWithAddress extends DefaultJsonProtocol {
+  implicit val userFormat = jsonFormat6(UserWithAddress.apply)
 }
