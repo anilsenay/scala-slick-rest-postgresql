@@ -1,17 +1,15 @@
 package com.anilsenay.controllers
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.anilsenay.models.Category
 import com.anilsenay.services.CategoryService
-import com.typesafe.scalalogging.LazyLogging
 import spray.json._
 
 import scala.util.{Failure, Success}
 
-class CategoryController(dbService: CategoryService.type) extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
+class CategoryController(dbService: CategoryService.type) extends BaseController {
   val route: Route = pathPrefix("api" / "category") {
     get {
       pathEndOrSingleSlash {

@@ -1,17 +1,15 @@
 package com.anilsenay.controllers
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.anilsenay.models.{Address, Order, OrderPost, User, UserWithAddress}
-import com.anilsenay.services.{AddressService, OrderService, UserService}
-import com.typesafe.scalalogging.LazyLogging
+import com.anilsenay.models.OrderPost
+import com.anilsenay.services.OrderService
 import spray.json._
 
 import scala.util.{Failure, Success}
 
-class OrderController(dbService: OrderService.type) extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
+class OrderController(dbService: OrderService.type) extends BaseController {
   val route: Route = pathPrefix("api" / "order") {
     get {
       path(LongNumber) {

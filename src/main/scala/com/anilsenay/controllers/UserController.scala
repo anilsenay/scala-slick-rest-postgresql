@@ -1,18 +1,15 @@
 package com.anilsenay.controllers
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.directives.Credentials
-import com.anilsenay.models.{Address, JWTContent, User, UserWithAddress}
-import com.anilsenay.services.{AddressService, AuthService, UserService}
-import com.typesafe.scalalogging.LazyLogging
+import com.anilsenay.models.{Address, User, UserWithAddress}
+import com.anilsenay.services.{AddressService, UserService}
 import spray.json._
 
 import scala.util.{Failure, Success}
 
-class UserController(dbService: UserService.type) extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging with BaseAuthenticator {
+class UserController(dbService: UserService.type) extends BaseController {
 
   val route: Route = pathPrefix("api" / "user") {
     authenticate { authUser =>

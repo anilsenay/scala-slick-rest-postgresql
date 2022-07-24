@@ -1,17 +1,15 @@
 package com.anilsenay.controllers
 
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.anilsenay.models.Brand
 import com.anilsenay.services.BrandService
-import com.typesafe.scalalogging.LazyLogging
 import spray.json._
 
 import scala.util.{Failure, Success}
 
-class BrandController(dbService: BrandService.type) extends SprayJsonSupport with DefaultJsonProtocol with LazyLogging {
+class BrandController(dbService: BrandService.type) extends BaseController {
   val route: Route = pathPrefix("api" / "brand") {
     get {
       pathEndOrSingleSlash {
