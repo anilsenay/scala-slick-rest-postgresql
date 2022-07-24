@@ -4,7 +4,6 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.anilsenay.controllers.RootRoute
-import com.anilsenay.utils.PostgresDb
 import com.typesafe.scalalogging.StrictLogging
 
 object Boot extends App with StrictLogging {

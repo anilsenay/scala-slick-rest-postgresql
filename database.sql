@@ -7,6 +7,13 @@ CREATE TABLE IF NOT EXISTS "users" (
                                        email VARCHAR NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS "user_password" (
+                                       user_id BIGINT UNIQUE primary key,
+                                       password VARCHAR NOT NULL,
+                                       salt VARCHAR NOT NULL,
+                                       CONSTRAINT fk_user FOREIGN KEY(user_id) REFERENCES users(id) ON delete cascade
+);
+
 CREATE TABLE IF NOT EXISTS "address" (
                                          id SERIAL UNIQUE primary key,
                                          title VARCHAR NOT NULL,

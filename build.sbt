@@ -17,6 +17,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick"         %% "slick-hikaricp"        % "3.3.3",
   "com.typesafe.scala-logging" %% "scala-logging"         % "3.9.5",
   "ch.qos.logback"             % "logback-classic"        % "1.2.11",
+  "com.github.jwt-scala"       %% "jwt-core"              % "9.0.6",
+  "com.outr"                   %% "hasher"                % "1.2.2"
 )
 
 lazy val root = (project in file("."))
