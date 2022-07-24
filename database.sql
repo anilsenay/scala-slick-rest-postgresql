@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS "users" (
                                        name VARCHAR NOT NULL,
                                        surname VARCHAR NOT NULL,
                                        phone VARCHAR,
-                                       email VARCHAR NOT NULL
+                                       email VARCHAR UNIQUE NOT NULL,
+                                       is_admin Boolean DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS "user_password" (

@@ -10,10 +10,11 @@ object UsersTable {
     def name = column[String]("name")
     def surname = column[String]("surname")
     def email = column[String]("email")
-    def phone = column[String]("phone")
+    def phone = column[Option[String]]("phone")
+    def isAdmin = column[Option[Boolean]]("is_admin")
 
     def * =
-      (id, name, surname, email, phone) <> ((User.apply _).tupled, User.unapply)
+      (id, name, surname, email, phone, isAdmin) <> ((User.apply _).tupled, User.unapply)
   }
 
   val users = TableQuery[Users]

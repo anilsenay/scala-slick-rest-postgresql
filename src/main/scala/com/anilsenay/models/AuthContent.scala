@@ -8,8 +8,8 @@ object AuthContent extends DefaultJsonProtocol {
   implicit val authFormat = jsonFormat2(AuthContent.apply)
 }
 
-case class AuthResponse(id: Long, email: String, token: String)
+case class AuthResponse(id: Long, email: String, token: String, isAdmin: Boolean = false)
 
 object AuthResponse extends DefaultJsonProtocol {
-  implicit val authResponseFormat = jsonFormat3(AuthResponse.apply)
+  implicit val authResponseFormat = jsonFormat4(AuthResponse.apply)
 }

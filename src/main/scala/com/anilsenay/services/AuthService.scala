@@ -12,6 +12,7 @@ import pdi.jwt.{Jwt, JwtAlgorithm, JwtClaim}
 import com.roundeights.hasher.Implicits._
 import com.typesafe.config.ConfigFactory
 import spray.json._
+import DefaultJsonProtocol._
 
 import java.time.Clock
 
@@ -21,8 +22,8 @@ object AuthService extends BaseService {
   implicit val clock: Clock = Clock.systemUTC
   private val secretKey: String = ConfigFactory.load().getString("secretKey")
 
-  private def createToken(id: Long, email: String, name: String, surname: String): String = {
-    val contentAsJson = JWTContent(id, email, name, surname).toJson.toString()
+  private def createToken(id: Long, email: String, name: String, surname: String, isAdmin: Boolean = false): String = {
+    val contentAsJson = JWTContent(id, email, name, surname, isAdmin).toJson.toString()
     val JwtContent = JwtClaim({contentAsJson}).issuedNow.expiresIn(_90_DAYS_AS_SECOND)
     Jwt.encode(JwtContent, secretKey, JwtAlgorithm.HS256)
   }
@@ -35,6 +36,12 @@ object AuthService extends BaseService {
     }
   }
 
+  def decodeToken: String => JWTContent = (token: String) => {
+    val decodedJwt = Jwt.decode(token, secretKey, Seq(JwtAlgorithm.HS256))
+
+    decodedJwt.get.toJson.parseJson.convertTo[JWTContent]
+  }
+
   def login(email: String, password: String): Future[Option[AuthResponse]] = {
     db.run {
       for {
@@ -42,8 +49,8 @@ object AuthService extends BaseService {
         userPassword <- userPasswords.filter(_.userId === user.id).result.head
       } yield {
         if(userPassword.password == digest2string((password + userPassword.salt).sha256)) {
-          val token = createToken(user.id.get, user.email, user.name, user.surname)
-          Some(AuthResponse(user.id.get, user.email, token))
+          val token = createToken(user.id.get, user.email, user.name, user.surname, user.isAdmin.getOrElse(false))
+          Some(AuthResponse(user.id.get, user.email, token, user.isAdmin.getOrElse(false)))
         } else {
           throw new AuthException()
         }
@@ -58,7 +65,7 @@ object AuthService extends BaseService {
       .map(_.id) into (
       (userData,
        id) => User(id, userData._1, userData._2, userData._3, userData._4)
-      )) += (user.name, user.surname, user.email, user.phone.getOrElse(""))
+      )) += (user.name, user.surname, user.email, user.phone)
 
     for {
       insertedUser <- db.run(action)
