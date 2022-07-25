@@ -172,8 +172,6 @@ object ProductService extends BaseService {
   def delete(id: Long): Future[Int] = {
     db.run {
       products.filter(_.id === id).delete
-      productImages.filter(_.productId === id).delete
-      productSizes.filter(_.productId === id).delete
     }
   }
 

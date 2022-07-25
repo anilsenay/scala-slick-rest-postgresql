@@ -21,6 +21,12 @@ object AddressService extends BaseService {
     }
   }
 
+  def findAddressByUserId(addressId: Long, userId: Long): Future[Option[UserAddress]] = {
+    db.run {
+      userAddresses.filter(_.addressId === addressId).filter(_.userId === userId).result.headOption
+    }
+  }
+
   def insertAddress(title: String, city: String, region: String, zipcode: String, fullAddress: String): Future[Address] = {
     val action = (addresses.map(address => (address.title, address.city, address.region, address.zipcode, address.fullAddress)) returning addresses
       .map(_.id) into (
@@ -42,12 +48,10 @@ object AddressService extends BaseService {
   }
 
   def update(id: Long, address: Address): Future[Int] = {
-    val action = addresses
+    db.run(addresses
       .filter(_.id === id)
       .map(a => (a.title, a.city, a.region, a.zipcode, a.fullAddress))
-      .update((address.title, address.city, address.region, address.zipcode, address.fullAddress))
-
-    db.run(action)
+      .update((address.title, address.city, address.region, address.zipcode, address.fullAddress)))
   }
 
   def delete(id: Long): Future[Int] = {

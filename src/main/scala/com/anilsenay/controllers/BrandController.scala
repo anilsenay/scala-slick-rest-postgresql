@@ -18,17 +18,22 @@ class BrandController(dbService: BrandService.type) extends BaseController {
     } ~
     post {
       pathEndOrSingleSlash {
-      entity(as[Brand]) { brand =>
-        val saved = dbService.insertBrand(brand.brandName)
-        onComplete(saved) {
-          case Success(updatedRows) => {
-            logger.info(s"Inserted brand")
-            complete(JsObject("updatedRows" -> JsNumber(updatedRows)))
-          }
-          case Failure(e) => {
-            logger.error(s"Failed to insert brand", e)
-            complete(StatusCodes.InternalServerError)
+        entity(as[Brand]) { brand =>
+          authenticate { authUser =>
+            if (authUser.isAdmin) {
+              val saved = dbService.insertBrand(brand.brandName)
+              onComplete(saved) {
+                case Success(updatedRows) => {
+                  logger.info(s"Inserted brand")
+                  complete(JsObject("updatedRows" -> JsNumber(updatedRows)))
+                }
+                case Failure(e) => {
+                  logger.error(s"Failed to insert brand", e)
+                  complete(StatusCodes.InternalServerError)
+                }
+              }
             }
+            else complete(StatusCodes.Unauthorized)
           }
         }
       }
@@ -36,26 +41,36 @@ class BrandController(dbService: BrandService.type) extends BaseController {
     put {
       path(LongNumber) { id =>
         entity(as[Brand]) { brand =>
-          val updated = dbService.update(id, brand.brandName)
-          onComplete(updated) {
-            case Success(updatedRows) => complete(JsObject("updatedRows" -> JsNumber(updatedRows)))
-            case Failure(e) => {
-              logger.error(s"Failed to update brand ${id}", e)
-              complete(StatusCodes.InternalServerError)
+          authenticate { authUser =>
+            if (authUser.isAdmin) {
+              val updated = dbService.update(id, brand.brandName)
+              onComplete(updated) {
+                case Success(updatedRows) => complete(JsObject("updatedRows" -> JsNumber(updatedRows)))
+                case Failure(e) => {
+                  logger.error(s"Failed to update brand ${id}", e)
+                  complete(StatusCodes.InternalServerError)
+                }
+              }
             }
+            else complete(StatusCodes.Unauthorized)
           }
         }
       }
     } ~
     delete {
       path(LongNumber) { id =>
-        val deleted = dbService.delete(id)
-        onComplete(deleted) {
-          case Success(updatedRows) => complete(JsObject("deletedRows" -> JsNumber(updatedRows)))
-          case Failure(e) => {
-            logger.error(s"Failed to delete brand ${id}", e)
-            complete(StatusCodes.InternalServerError)
+        authenticate { authUser =>
+          if (authUser.isAdmin) {
+            val deleted = dbService.delete(id)
+            onComplete(deleted) {
+              case Success(updatedRows) => complete(JsObject("deletedRows" -> JsNumber(updatedRows)))
+              case Failure(e) => {
+                logger.error(s"Failed to delete brand ${id}", e)
+                complete(StatusCodes.InternalServerError)
+              }
+            }
           }
+          else complete(StatusCodes.Unauthorized)
         }
       }
     }

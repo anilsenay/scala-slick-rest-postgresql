@@ -55,7 +55,6 @@ object OrderService extends BaseService {
           }
         }.toSeq.head
     }
-
   }
 
   def getUserOrders(userId: Long) = {
@@ -97,7 +96,12 @@ object OrderService extends BaseService {
           }
         }.toSeq
     }
+  }
 
+  def findOrderByUserId(addressId: Long, userId: Long): Future[Option[Order]] = {
+    db.run {
+      orders.filter(_.id === addressId).filter(_.userId === userId).result.headOption
+    }
   }
 
   def insertOrder(order: OrderPost) = {
@@ -109,7 +113,7 @@ object OrderService extends BaseService {
         inserted <- (orders.map(o => (o.userId, o.addressId, o.totalPrice, o.status, o.createdAt, o.updatedAt)) returning orders
           .map(_.id) into (
           (data, id) => Order(id, data._1, data._2, data._3, data._4, data._5, data._6)
-          )) += (order.userId, order.addressId, productList.map(_.salePrice).sum, 0, now, now)
+          )) += (order.userId, order.addressId, productList.map(_.salePrice).sum, 1, now, now)
         _ <- DBIO.seq(
           orderProducts ++= order.products.map(i =>
             OrderProduct(inserted.id, Some(i.id), i.quantity, i.size, productList.filter(_.id.get == i.id).head.salePrice)
@@ -124,6 +128,15 @@ object OrderService extends BaseService {
       .filter(_.id === id)
       .map(o => (o.status, o.updatedAt))
       .update((status, new Timestamp(System.currentTimeMillis())))
+
+    db.run(action)
+  }
+
+  def cancelOrder(id: Long): Future[Int] = {
+    val action = orders
+      .filter(_.id === id)
+      .map(o => (o.status, o.updatedAt))
+      .update((1, new Timestamp(System.currentTimeMillis())))
 
     db.run(action)
   }
