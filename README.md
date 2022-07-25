@@ -36,9 +36,22 @@ docker compose up
 sbt run
 ```
 
+### Configuration
+#### _Change database credentials_
+Change credentials in both `docker-compose.yml` and `src/main/resources/application.conf` files
+#### _Change secret key for generating JWT_
+Change `secretKey` in `src/main/resources/application.conf` file
+
 ## API REST Interface
 
 Download Postman Collection: [GDrive](https://drive.google.com/file/d/1RRv9KwE2ULhnhLJ-hcusnSq7Y4sG6j3I/view?usp=sharing)
+
+_You have to be authorized for access some endpoints by adding user's JWT token as Bearer to **Authorization** key in request header._
+
+**AUTH**
+- `POST /api/auth/login`
+- `POST /api/auth/register`
+- `POST /api/auth/validate`
 
 **USER**
 - `GET /api/user`
@@ -85,13 +98,14 @@ Download Postman Collection: [GDrive](https://drive.google.com/file/d/1RRv9KwE2U
 - `GET /api/order/{order_id}?user={user_id}`
 - `POST /api/order`
 - `PUT /api/order/{order_id}/{status}`
+- `PUT /api/order/{order_id}/cancel`
 - `DELETE /api/order/{order_id}`
 
 ## Future plans
 
 - Applying best practices
 - Implement Swagger
-- Implement authentication
+- ~~Implement authentication~~
 - Implement a cache mechanism
 - Better Error messages
 - Create same project by using Akka Play framework & use Quill instead of Slick
