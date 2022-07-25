@@ -35,12 +35,18 @@ object UserService extends BaseService {
     } yield (user, address)
   }
 
-  def insertUser(name: String, surname: String, email: String, phone: String): Future[User] = {
-    val action = (users.map(user => (user.name, user.surname, user.email, user.phone)) returning users
+  def insertUser(
+                  name: String,
+                  surname: String,
+                  email: String,
+                  phone: Option[String],
+                  isAdmin: Option[Boolean] = Some(false)
+                ): Future[User] = {
+    val action = (users.map(user => (user.name, user.surname, user.email, user.phone, user.isAdmin)) returning users
       .map(_.id) into (
       (userData,
-       id) => User(id, userData._1, userData._2, userData._3, userData._4)
-      )) += (name, surname, email, phone)
+       id) => User(id, userData._1, userData._2, userData._3, userData._4, userData._5)
+      )) += (name, surname, email, phone, isAdmin)
     db.run(action)
   }
 
